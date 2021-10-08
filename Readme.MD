@@ -181,7 +181,7 @@ Distributed under the GNU GPL3 License. See `LICENSE` for more information.
 [issues-shield]: https://img.shields.io/github/issues/kanitmann/Instagram_backend_API.svg?style=for-the-badge
 [issues-url]: https://github.com/kanitmann/Instagram_backend_API/issues
 [license-shield]: https://img.shields.io/github/license/kanitmann/Instagram_backend_API?style=for-the-badge&logo=appveyor
-[license-url]: https://github.com/kanitmann/Instagram_backend_API/blob/master/LICENSE.txt
+[license-url]: https://github.com/kanitmann/Instagram_backend_API/blob/master/LICENSE
 [made-with-shield]: https://img.shields.io/github/languages/top/kanitmann/Instagram_backend_API?style=for-the-badge
 [made-with-url]: https://shields.io/github/languages/top/kanitmann/Instagram_backend_API.svg?style-for-the-badge
 [product-screenshot]: (images/screenshot.png)
