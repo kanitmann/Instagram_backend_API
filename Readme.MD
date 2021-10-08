@@ -125,10 +125,10 @@ To get a local copy up and running follow these simple steps.
 
 ### Prerequisites
 
-This list things you need to use the web app and how to install them.
+This list things you need, and how to install them.
 
-- Python 3.6.8
-- PHP
+- Go 1.17.1
+- MongoDB 5.0.3
 
 ### Installation
 
