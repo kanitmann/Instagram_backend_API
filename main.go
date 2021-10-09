@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -46,7 +49,7 @@ func find_post_id(w http.ResponseWriter, r *http.Request) {
 
 	key := keys[0]
 
-	collection := client.Database("Meetings").Collection("Meets")
+	collection := client.Database("Posts").Collection("Post")
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	cursor, err := collection.Find(ctx, bson.M{"ID": key})
 	if err != nil {
@@ -77,6 +80,67 @@ func find_post_id(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(jsonDocuments)
 
+}
+
+//Add Post
+
+func addMeeting(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		fmt.Fprintf(w, "invalid_http_method")
+		return
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+	log.Println(string(body))
+
+	if err != nil {
+		panic(err)
+	}
+
+	//Checking RACE Conditions
+	res1 := strings.Split(string(body), "[{")
+	res2 := strings.Split(res1[1], "}]")
+	res3 := strings.ReplaceAll(res2[0], "} , {", ",")
+	res5 := strings.Split(res2[1], ":")
+	res6 := strings.Split(res5[1], ",")
+	end_time, err := strconv.Atoi(strings.Trim(res5[2], "}"))
+	start_time, err := strconv.Atoi(strings.Trim(res6[0], " "))
+	res4 := strings.Split(res3, ",")
+	for i, s := range res4 {
+		a := strings.Split(s, ":")
+		e1 := " "
+		if (i+1)%2 == 0 {
+			e1 = strings.Trim(a[1], "\"")
+		}
+		if (i+1)%3 == 0 {
+
+			if a[1] == "\"YES\"" {
+				obj := &total_users{[]int{}, []int{}}
+				obj.AppendValues(start_time, end_time)
+				MyMap[e1] = obj
+				fmt.Fprintf(w, "ADDED WITHOUT COLLISION")
+			}
+
+		}
+		fmt.Println(MyMap)
+	}
+
+	var m interface{}
+	errr := bson.UnmarshalExtJSON([]byte(body), true, &m)
+	if errr != nil {
+		log.Println(errr)
+	}
+	log.Println(m)
+
+	collection := client.Database("Posts").Collection("Post")
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	result, _ := collection.InsertOne(ctx, m)
+
+	json.NewEncoder(w).Encode(result)
 }
 
 func close(client *mongo.Client, ctx context.Context,
