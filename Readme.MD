@@ -137,13 +137,13 @@ This list things you need, and how to install them.
    git clone https://github.com/kanitmann/Instagram_backend_API.git
    ```
 2. Initialize GO
-  ```sh
-  go mod init github.com/<Github ID>/<Project Name>
-  ```
+    ```sh
+    go mod init github.com/<Github ID>/<Project Name>
+    ```
 3. Build 
-  ```sh
-  go build
-  ```
+    ```sh
+    go build
+    ```
 <!-- USAGE EXAMPLES 
 
 ## Usage
