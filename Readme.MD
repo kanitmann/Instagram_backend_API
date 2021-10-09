@@ -76,7 +76,7 @@ You are required to Design and Develop an HTTP JSON API capable of the following
     - Id should be in the url parameter
     - URL should be ``‘/users/<id here>’``
 
-- [ ]Create a Post
+- [ ] Create a Post
     - Should be a POST request
     - Use JSON request body
     - URL should be ``‘/posts'``
