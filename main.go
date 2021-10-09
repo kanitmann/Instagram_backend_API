@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,6 +13,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
+
+var client *mongo.Client
+var MyMap map[string]*total_users
 
 type profile struct {
 	ID     string `json:"ID" bson:"ID"`
@@ -28,6 +33,50 @@ type total_users struct {
 func (data *total_users) AppendValues(s int, e int) {
 	data.Start = append(data.Start, s)
 	data.End = append(data.End, s)
+}
+
+func find_post_id(w http.ResponseWriter, r *http.Request) {
+
+	keys, ok := r.URL.Query()["ID"]
+
+	if !ok || len(keys[0]) < 1 {
+		log.Println("Url Param 'key' is missing")
+		return
+	}
+
+	key := keys[0]
+
+	collection := client.Database("Meetings").Collection("Meets")
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	cursor, err := collection.Find(ctx, bson.M{"ID": key})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{ "message": "` + err.Error() + `" }`))
+		return
+	}
+	var jsonDocuments []map[string]interface{}
+	var bsonDocument bson.D
+	var jsonDocument map[string]interface{}
+	var temporaryBytes []byte
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
+
+		err = cursor.Decode(&bsonDocument)
+
+		temporaryBytes, err = bson.MarshalExtJSON(bsonDocument, true, true)
+
+		err = json.Unmarshal(temporaryBytes, &jsonDocument)
+
+		jsonDocuments = append(jsonDocuments, jsonDocument)
+		fmt.Println(jsonDocuments)
+	}
+	if err := cursor.Err(); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{ "message": "` + err.Error() + `" }`))
+		return
+	}
+	json.NewEncoder(w).Encode(jsonDocuments)
+
 }
 
 func close(client *mongo.Client, ctx context.Context,
@@ -84,6 +133,8 @@ func main() {
 	}
 	defer close(client, ctx, cancel)
 
+	fmt.Println("Starting the application...")
+
 	quickstartDatabase := client.Database("Quickstart")
 	TaskCollection := quickstartDatabase.Collection("Task")
 	episodesCollection := quickstartDatabase.Collection("Post")
@@ -115,11 +166,13 @@ func main() {
 			{"User ID", UserID.InsertedID},
 			{"Name", "Kanit Mann"},
 			{"Age", 20},
+			{"demo", "demo"},
 		},
 		bson.D{
 			{"User ID", UserID.InsertedID},
 			{"Name", "Gaurav"},
 			{"Age", 27},
+			{"demo", "demo"},
 		},
 	})
 	if err != nil {
