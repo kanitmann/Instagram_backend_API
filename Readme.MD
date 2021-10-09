@@ -66,7 +66,7 @@
 The task is to develop a basic version of a Instagram. You are only required to ```develop the API``` for the system. Below are the details.
 
 You are required to Design and Develop an HTTP JSON API capable of the following operations,
-- [ ] Create an User
+- [x] Create an User
     - Should be a POST request
     - Use JSON request body
     - URL should be ``‘/users'``
@@ -76,7 +76,7 @@ You are required to Design and Develop an HTTP JSON API capable of the following
     - Id should be in the url parameter
     - URL should be ``‘/users/<id here>’``
 
-- [ ] Create a Post
+- [x] Create a Post
     - Should be a POST request
     - Use JSON request body
     - URL should be ``‘/posts'``
@@ -136,7 +136,14 @@ This list things you need, and how to install them.
    ```sh
    git clone https://github.com/kanitmann/Instagram_backend_API.git
    ```
-
+2. Initialize GO
+  ```sh
+  go mod init github.com/<Github ID>/<Project Name>
+  ```
+3. Build 
+  ```sh
+  go build
+  ```
 <!-- USAGE EXAMPLES 
 
 ## Usage
