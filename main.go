@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -83,50 +84,47 @@ func main() {
 	}
 	defer close(client, ctx, cancel)
 
+	quickstartDatabase := client.Database("Quickstart")
+	TaskCollection := quickstartDatabase.Collection("Task")
+	episodesCollection := quickstartDatabase.Collection("Post")
+
 	ping(client, ctx)
 	var document interface{}
 
 	document = bson.D{
-		{"Kanit", 17},
-		{"Ayush	", 30},
-		{"K2", 42},
-		{"abc", 35},
+		{"ID", 1},
+		{"Name", "Kanit Mann"},
+		{"Age", 19},
 	}
-	insertOneResult, err := insertOne(client, ctx, "gfg",
-		"marks", document)
+	insertOneResult, err := insertOne(client, ctx, "Key",
+		"Value", document)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Result of InsertOne")
 	fmt.Println(insertOneResult.InsertedID)
 
-	var documents []interface{}
+	UserID, err := TaskCollection.InsertOne(ctx, bson.D{
+		{Key: "PostID", Value: "OpenSourceIntro"},
+		{Key: "Author", Value: "Kanit Mann"},
+		{Key: "tags", Value: bson.A{"development", "programming", "coding"}},
+	})
 
-	documents = []interface{}{
+	postCollection, err := episodesCollection.InsertMany(ctx, []interface{}{
 		bson.D{
-			{"Kanit", 20},
-			{"Ronit", 65},
-			{"Ayush", 59},
-			{"Samay", 55},
+			{"User ID", UserID.InsertedID},
+			{"Name", "Kanit Mann"},
+			{"Age", 20},
 		},
 		bson.D{
-			{"Jamie", 45},
-			{"Shamie", 23},
-			{"Gorgie", 30},
-			{"Lolie", 29},
+			{"User ID", UserID.InsertedID},
+			{"Name", "Gaurav"},
+			{"Age", 27},
 		},
-	}
-
-	insertManyResult, err := insertMany(client, ctx, "Name",
-		"Age", documents)
-
+	})
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
+	fmt.Printf("Inserted %v documents into Post collection!\n", len(postCollection.InsertedIDs))
 
-	fmt.Println("Result of InsertMany")
-
-	for id := range insertManyResult.InsertedIDs {
-		fmt.Println(id)
-	}
 }
